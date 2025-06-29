@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Spring Boot
+/logs/
+!/logs/spring.log  # Keep only spring.log
+
+# Environment files
+.env
+application*.yml
+application*.properties  # Except templates
+
+# Database files
+*.db
+*.h2.db
