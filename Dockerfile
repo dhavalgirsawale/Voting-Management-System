@@ -1,21 +1,14 @@
-# Builder stage
 FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
-# 1. Copy Maven wrapper files
-COPY .mvn/ .mvn
-COPY mvnw ./
+# Copy everything except what's in .dockerignore
+COPY . .
 
-# 2. MAKE EXECUTABLE (CRITICAL FIX)
-RUN chmod +x mvnw
+# Set permissions and build
+RUN chmod +x mvnw && \
+    ./mvnw dependency:go-offline && \
+    ./mvnw package -DskipTests
 
-# 3. Proceed with build
-COPY pom.xml ./
-RUN ./mvnw dependency:go-offline
-COPY src ./src
-RUN ./mvnw package -DskipTests
-
-# Runtime stage (unchanged)
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
